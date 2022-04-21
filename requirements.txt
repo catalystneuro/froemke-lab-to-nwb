@@ -1,0 +1,2 @@
+roiextractors
+nwb-conversion-tools>=0.9.1
