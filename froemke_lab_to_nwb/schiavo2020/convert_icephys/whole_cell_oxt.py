@@ -22,12 +22,11 @@ def convert_oxt_cell(cell_name, df, input_metadata, dest_dir=DEST_DATA_DIR):
     abf_filepaths = [os.path.join(WHOLE_CELL_OXT_DIR, file_id + ".abf") for file_id in file_ids]
     abf_interface = AbfInterface(abf_filepaths)
     metadata = abf_interface.get_metadata()
-    metadata["Icephys"]["Electrode"] = metadata["Icephys"]["Electrode"][:1]
 
     metadata = dict_deep_update(metadata, input_metadata)
 
     nwbfile = make_nwbfile_from_metadata(metadata)
-    abf_interface.run_conversion(nwbfile=nwbfile, metadata=metadata, skip_electrodes=(1,))
+    abf_interface.run_conversion(nwbfile=nwbfile, metadata=metadata)
 
     nwbfile.icephys_sequential_recordings.add_column(
         name="notes", description="notes from excel spreadsheet", data=df["Notes"].values.tolist()
@@ -82,6 +81,3 @@ def convert_all_oxt_and_control(article_directory=WHOLE_CELL_OXT_DIR):
 
     convert_all_oxt(article_directory, metadata)
     convert_all_control(article_directory, metadata)
-
-
-convert_all_oxt_and_control(WHOLE_CELL_OXT_DIR)
