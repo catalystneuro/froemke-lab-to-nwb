@@ -12,9 +12,9 @@ from pynwb import NWBHDF5IO
 from tqdm import tqdm
 from tqdm.notebook import tqdm
 
-from .. import DEST_DATA_DIR
+from . import DEST_DATA_DIR, SRC_DATA_DIR
 
-WHOLE_CELL_OXT_DIR = os.path.join(DEST_DATA_DIR, "In vitro recordings_oxytocin")
+WHOLE_CELL_OXT_DIR = os.path.join(SRC_DATA_DIR, "In vitro recordings_oxytocin")
 
 
 def convert_oxt_cell(cell_name, df, input_metadata, dest_dir=DEST_DATA_DIR):
@@ -24,6 +24,13 @@ def convert_oxt_cell(cell_name, df, input_metadata, dest_dir=DEST_DATA_DIR):
     metadata = abf_interface.get_metadata()
 
     metadata = dict_deep_update(metadata, input_metadata)
+
+    metadata.update(
+        Subject=dict(
+            subject_id=file_ids[0][:5],
+            species="Mus musculus",
+        )
+    )
 
     nwbfile = make_nwbfile_from_metadata(metadata)
     abf_interface.run_conversion(nwbfile=nwbfile, metadata=metadata)
@@ -43,7 +50,7 @@ def convert_all_oxt(article_directory, metadata):
         usecols=(0, 1, 2, 3),
         na_filter=False,
     )
-    df_oxt["Cell Name"][df_oxt["Cell Name"] == ""] = np.nan
+    df_oxt["Cell Name"] = df_oxt["Cell Name"].replace("", np.nan)
     df_oxt["Cell Name"] = df_oxt["Cell Name"].ffill()
     for cell_name, df in tqdm(list(df_oxt.groupby("Cell Name")), desc="OXT icephys"):
         convert_oxt_cell(cell_name, df, metadata)

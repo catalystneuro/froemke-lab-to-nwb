@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from codecs import open
 import os
 
@@ -12,7 +12,7 @@ with open(os.path.join(here, "requirements.txt")) as f:
 
 
 setup(
-    name="froemke-lab-to-nwb",
+    name="froemke_lab_to_nwb",
     version="0.1.0",
     description="NWB conversion scripts for the Froemke lab.",
     long_description=long_description,
@@ -22,4 +22,5 @@ setup(
     url="https://github.com/catalystneuro/froemke-lab-to-nwb",
     python_requires=">=3.7",
     install_requires=install_requires,
+    packages=find_packages(),
 )

@@ -6,6 +6,7 @@ import json
 from nwb_conversion_tools.datainterfaces import TiffImagingInterface
 from nwb_conversion_tools.utils import dict_deep_update
 from tqdm import tqdm
+
 from . import SRC_DATA_DIR, DEST_DATA_DIR
 
 

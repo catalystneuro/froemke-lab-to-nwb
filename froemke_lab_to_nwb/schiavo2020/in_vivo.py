@@ -13,7 +13,7 @@ from pynwb import NWBHDF5IO
 from pynwb import TimeSeries
 from tqdm import tqdm
 
-from .. import DEST_DATA_DIR, SRC_DATA_DIR
+from . import DEST_DATA_DIR, SRC_DATA_DIR
 
 IN_VIVO_DIRS = [
     "In vivo whole-cell recordings_Experienced females",
@@ -29,6 +29,13 @@ def convert_in_vivo(cell_name, df, input_metadata, article_dir, dest_dir):
     metadata = abf_interface.get_metadata()
 
     metadata = dict_deep_update(metadata, input_metadata)
+
+    metadata.update(
+        Subject=dict(
+            subject_id=file_ids[0][:5],
+            species="Mus musculus",
+        )
+    )
 
     nwbfile = make_nwbfile_from_metadata(metadata)
     abf_interface.run_conversion(nwbfile=nwbfile, metadata=metadata, skip_electrodes=(1,))
