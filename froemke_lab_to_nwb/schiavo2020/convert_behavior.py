@@ -28,7 +28,7 @@ def convert_all_behavior(src: str = BEHAVIOR_DIR, dest: str = DEST_DATA_DIR) -> 
             session_description=fname,
             session_id=fname,
             identifier=str(uuid.uuid4()),
-            subject=Subject(subject_id=subject_id, species="Mus musculus"),
+            subject=Subject(subject_id=subject_id, species="Mus musculus", genotype="C57BL/6"),
             experiment_description=json_metadata["NWBFile"]["experiment_description"],
         )
 

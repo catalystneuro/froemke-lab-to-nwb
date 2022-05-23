@@ -29,6 +29,7 @@ def convert_oxt_cell(cell_name, df, input_metadata, dest_dir=DEST_DATA_DIR):
         Subject=dict(
             subject_id=file_ids[0][:5],
             species="Mus musculus",
+            genotype="C57Bl/6",
         )
     )
 

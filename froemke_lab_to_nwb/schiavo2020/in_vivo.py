@@ -13,6 +13,8 @@ from pynwb import NWBHDF5IO
 from pynwb import TimeSeries
 from tqdm import tqdm
 
+from ndx_sound import AcousticWaveformSeries
+
 from . import DEST_DATA_DIR, SRC_DATA_DIR
 
 IN_VIVO_DIRS = [
@@ -46,13 +48,12 @@ def convert_in_vivo(cell_name, df, input_metadata, article_dir, dest_dir):
         rate = neo_reader.get_signal_sampling_rate()
         for i_segment in range(neo_reader.segment_count(block_index=0)):
             nwbfile.add_stimulus(
-                TimeSeries(
+                AcousticWaveformSeries(
                     name=f"auditory_stimulus{i_segment+1:02}",
                     description="auditory stimulus recorded inline in ABF file.",
                     data=neo_reader.get_analogsignal_chunk(block_index=0, seg_index=i_segment)[:, 1],
                     starting_time=neo_reader.get_signal_t_start(seg_index=i_segment, block_index=0),
                     rate=rate,
-                    unit="n.a.",
                 )
             )
 

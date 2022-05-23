@@ -36,12 +36,7 @@ def convert_actx_cell(cell_id, cell_df, input_metadata, dest_dir=DEST_DATA_DIR):
 
     metadata = dict_deep_update(metadata, input_metadata)
 
-    metadata.update(
-        Subject=dict(
-            subject_id=file_ids[0][:5],
-            species="Mus musculus",
-        )
-    )
+    metadata["Subject"].update(subject_id=file_ids[0][:5])
 
     nwbfile = make_nwbfile_from_metadata(metadata)
     abf_interface.run_conversion(nwbfile=nwbfile, metadata=metadata)
@@ -56,6 +51,8 @@ def convert_actx_cell(cell_id, cell_df, input_metadata, dest_dir=DEST_DATA_DIR):
 def convert_all_actx(article_dir=ACTX_DIR):
     with open(os.path.join(article_dir, "metadata.json"), "r") as file:
         metadata = json.load(file)
+
+    metadata["Subject"] = dict(species="Mus musculus", genotype="C57BL/6")
     xlsx_filepath = glob(os.path.join(article_dir, "*.xlsx"))[0]
     df = pd.read_excel(xlsx_filepath, dtype=str, na_filter=False)
     df["Cell #"] = df["Cell #"].replace('', np.nan)
