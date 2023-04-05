@@ -6,7 +6,7 @@ from .convert_behavior import convert_all_behavior
 
 
 def convert_all():
-    #convert_all_ophys()
+    convert_all_ophys()
     convert_all_actx()
     convert_all_in_vivo()
     convert_all_oxt_and_control()
