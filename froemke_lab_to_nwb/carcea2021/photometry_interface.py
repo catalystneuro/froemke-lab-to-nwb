@@ -5,6 +5,7 @@ from typing import Optional
 from neuroconv.basedatainterface import BaseDataInterface
 
 import numpy as np
+from neuroconv.utils import FolderPathType
 
 from pynwb import NWBFile
 from pynwb.core import DynamicTableRegion
@@ -22,15 +23,23 @@ from scipy.io import loadmat
 
 class PhotometryInterface(BaseDataInterface):
 
-    def __init__(self, folder_path):
+    def __init__(self, folder_path: FolderPathType):
         super().__init__(folder_path=folder_path)
+
+    def align_timestamps(self):
+        pass
+
+    def get_original_timestamps(self):
+        pass
+
+    def get_timestamps(self):
+        pass
 
     def run_conversion(
         self,
         nwbfile: Optional[NWBFile] = None,
         metadata: Optional[dict] = None,
         overwrite: bool = False,
-        **conversion_options,
     ):
         ctrl_path = os.path.join(self.source_data["folder_path"], "Ctrl.mat")
         if Path(ctrl_path).is_file():
@@ -83,9 +92,7 @@ class PhotometryInterface(BaseDataInterface):
             gain=np.nan,
         )
 
-        fluorophores_table = FluorophoresTable(
-            description='fluorophores'
-        )
+        fluorophores_table = FluorophoresTable(description='fluorophores')
 
         fluorophores_table.add_row(
             label='unknown',
@@ -93,8 +100,16 @@ class PhotometryInterface(BaseDataInterface):
             coordinates=(np.nan, np.nan, np.nan),
         )
 
-        fibers_table = FibersTable(
-            description="fibers table"
+        fibers_table = FibersTable(description="fibers table")
+
+        # Here we add the metadata tables to the metadata section
+        nwbfile.add_lab_meta_data(
+            FiberPhotometry(
+                fibers=fibers_table,
+                excitation_sources=excitationsources_table,
+                photodetectors=photodetectors_table,
+                fluorophores=fluorophores_table,
+            )
         )
 
         fibers_table.add_fiber(
@@ -112,24 +127,12 @@ class PhotometryInterface(BaseDataInterface):
             table=fibers_table
         )
 
-        # Here we add the metadata tables to the metadata section
-        nwbfile.add_lab_meta_data(
-            FiberPhotometry(
-                fibers=fibers_table,
-                excitation_sources=excitationsources_table,
-                photodetectors=photodetectors_table,
-                fluorophores=fluorophores_table,
-            )
-        )
-
         roi_response_series = RoiResponseSeries(
+            name="RoiResponseSeries",
             timestamps=timestamps,
             data=resp_data,
             unit="W",
-            rios=fibers_ref,
+            rois=fibers_ref,
         )
 
         nwbfile.add_acquisition(roi_response_series)
-
-
-
