@@ -65,6 +65,9 @@ def convert_all(data_dir=root, stub_test=False, ephys_session=True, ophys_sessio
 
     if ephys_session:
         for subject_id, session_id in tqdm(ephys_sessions, desc="ecephys sessions"):
+            out_path = os.path.join(data_dir, "nwb", subject_id + "_" + session_id + ".nwb")
+            if os.path.exists(out_path):
+                continue
 
             ns5_path = os.path.join(data_dir, "ns5", f"{subject_id}_{session_id}.ns5")
             source_data = DeepDict()
@@ -100,13 +103,18 @@ def convert_all(data_dir=root, stub_test=False, ephys_session=True, ophys_sessio
             )
 
             converter.run_conversion(
-                os.path.join(data_dir, "nwb", subject_id + "_" + session_id + ".nwb"),
+                out_path,
                 metadata=metadata,
                 conversion_options=conversion_options,
             )
 
     if ophys_session:
         for subject_id, session_id in tqdm(photometry_sessions, "ophys sessions"):
+
+            out_path = os.path.join(data_dir, "nwb", subject_id + "_" + session_id + ".nwb")
+            if os.path.exists(out_path):
+                continue
+
             behav_path = os.path.join(data_dir, "ophys_behavior", f"{subject_id}_{session_id}.xlsx".lower().replace(" ",
                                                                                                                 ""))
             photometry_path = os.path.join(data_dir, "photometry", subject_id, session_id)
@@ -125,7 +133,7 @@ def convert_all(data_dir=root, stub_test=False, ephys_session=True, ophys_sessio
             metadata["Subject"]["subject_id"] = subject_id
 
             converter.run_conversion(
-                os.path.join(data_dir, "nwb", subject_id + "_" + session_id + ".nwb"),
+                out_path,
                 metadata=metadata,
             )
 
