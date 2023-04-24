@@ -3,3 +3,4 @@ natsort
 scipy
 numpy
 ndx_photometry
+neuroconv

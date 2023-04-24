@@ -7,7 +7,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, "README.md")) as f:
     long_description = f.read()
 
-with open(os.path.join(here, "froemke_lab_to_nwb/schiavo2020/requirements.txt")) as f:
+with open(os.path.join(here, "froemke_lab_to_nwb/carcea2021/requirements.txt")) as f:
     install_requires = f.read().strip().split("\n")
 
 
