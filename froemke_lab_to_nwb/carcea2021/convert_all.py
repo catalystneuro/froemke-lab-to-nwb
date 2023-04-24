@@ -56,19 +56,17 @@ subject_metadata = dict(
 
 
 root = "/Volumes/Extreme Pro/neural_data/Froemke/Carcea2021"
-nev_files = list(Path(root).rglob('[!.]*.nev'))
-#print([str(x) for x in nev_files])
 
 
-out = "/Volumes/Extreme Pro/neural_data/Froemke/Carcea2021_NWB"
+def convert_all(data_dir=root, stub_test=False, ephys_session=True, ophys_session=True):
 
-
-def convert_all(stub_test=False, ephys_session=True, ophys_session=True):
+    nev_files = list(Path(data_dir).rglob('[!.]*.nev'))
+    os.mkdir(os.path.join(data_dir, "nwb"))
 
     if ephys_session:
         for subject_id, session_id in tqdm(ephys_sessions, desc="ecephys sessions"):
 
-            ns5_path = os.path.join(root, "ns5", f"{subject_id}_{session_id}.ns5")
+            ns5_path = os.path.join(data_dir, "ns5", f"{subject_id}_{session_id}.ns5")
             source_data = DeepDict()
             source_data["recording"]["file_path"] = ns5_path
 
@@ -78,7 +76,7 @@ def convert_all(stub_test=False, ephys_session=True, ophys_session=True):
                     source_data["sorting"]["sampling_frequency"] = 30_000.
                     continue
 
-            behav_path = Path(root) / "ephys_behavior_curated" / f"{subject_id}_{session_id}.xlsx"
+            behav_path = Path(data_dir) / "ephys_behavior_curated" / f"{subject_id}_{session_id}.xlsx"
             if behav_path.is_file():
                 source_data["behavior"]["file_path"] = str(behav_path)
 
@@ -97,20 +95,21 @@ def convert_all(stub_test=False, ephys_session=True, ophys_session=True):
                     iterator_opts=dict(
                         display_progress=True
                     ),
+                    stub_test=stub_test,
                 ),
             )
 
             converter.run_conversion(
-                os.path.join(out, subject_id + "_" + session_id + ".nwb"),
+                os.path.join(data_dir, "nwb", subject_id + "_" + session_id + ".nwb"),
                 metadata=metadata,
                 conversion_options=conversion_options,
             )
 
     if ophys_session:
         for subject_id, session_id in tqdm(photometry_sessions, "ophys sessions"):
-            behav_path = os.path.join(root, "ophys_behavior", f"{subject_id}_{session_id}.xlsx".lower().replace(" ",
+            behav_path = os.path.join(data_dir, "ophys_behavior", f"{subject_id}_{session_id}.xlsx".lower().replace(" ",
                                                                                                                 ""))
-            photometry_path = os.path.join(root, "photometry", subject_id, session_id)
+            photometry_path = os.path.join(data_dir, "photometry", subject_id, session_id)
             source_data = dict(
                 behavior=dict(file_path=behav_path),
                 photometry=dict(folder_path=photometry_path),
@@ -126,10 +125,10 @@ def convert_all(stub_test=False, ephys_session=True, ophys_session=True):
             metadata["Subject"]["subject_id"] = subject_id
 
             converter.run_conversion(
-                os.path.join(out, subject_id + "_" + session_id + ".nwb"),
+                os.path.join(data_dir, "nwb", subject_id + "_" + session_id + ".nwb"),
                 metadata=metadata,
             )
 
 
 if __name__ == "__main__":
-    convert_all(stub_test=True, ephys_session=False, ophys_session=True)
+    convert_all(data_dir=root, stub_test=True, ephys_session=False, ophys_session=True)
