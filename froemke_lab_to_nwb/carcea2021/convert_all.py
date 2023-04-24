@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 
 from neuroconv.utils.dict import DeepDict
@@ -61,7 +62,7 @@ root = "/Volumes/Extreme Pro/neural_data/Froemke/Carcea2021"
 def convert_all(data_dir=root, stub_test=False, ephys_session=True, ophys_session=True):
 
     nev_files = list(Path(data_dir).rglob('[!.]*.nev'))
-    os.mkdir(os.path.join(data_dir, "nwb"))
+    (Path(data_dir) / "nwb").mkdir(exist_ok=True)
 
     if ephys_session:
         for subject_id, session_id in tqdm(ephys_sessions, desc="ecephys sessions"):
